@@ -9,8 +9,8 @@ export function Login() {
     //contraseña: 123456
 
     const [state, setState] = useState({
-        user: '',
-        password: '',
+        user: 'jpsalamanca99@gmail.com',
+        password: '123456',
         loged: false
     })
 

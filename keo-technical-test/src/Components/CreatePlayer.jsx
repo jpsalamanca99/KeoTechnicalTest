@@ -5,29 +5,31 @@ import "../Styles/styles.css";
 
 export function CreatePlayer(props) {
 
-    //Player name;0 0 0 0 0;0 0 0 0 0;0 0 0 0 0;0 0 0 0 0;0 0 0 0 0;
-
+    
     const [state, setState] = useState({
         form: '',
         selectedFile: null
     })
-
+    
     const firebase = useFirebaseApp();
-
+    
     const sendData = (player) => {
         props.parentCallback(player);
     }
-
+    
     const onDataChange = (value) => {
         setState({ ...state, form: value });
     }
-
+    
     const onImageChange = (target) => {
         setState({ ...state, selectedFile: target.files[0] });
     }
-
+    
+    //Player name;0 0 0 0 0;0 0 0 0 0;0 0 0 0 0;0 0 0 0 0;0 0 0 0 0;
+    
     const onClick = async () => {
-        if (state.form !== '' && state.selectedFile !== null) {
+        let validation = validateForm();
+        if (validation && state.selectedFile !== null) {
             let url = await sendFile();
             let rawString = state.form;
             let arr = rawString.split(';');
@@ -41,7 +43,18 @@ export function CreatePlayer(props) {
                 name: arr[0],
                 score: points
             });
+        } else {
+            alert('Error en el formato del jugador');
         }
+    }
+
+    const validateForm = () => {
+        let name = state.form.substring(0, state.form.indexOf(';'));
+        if (name.length === 0 || name.length > 20) return false;
+        let score = state.form.substring(state.form.indexOf(';'))
+        let nameRegex = new RegExp('[^A-Za-z ]{1}');
+        let scoreRegex = new RegExp(';([01] [01] [01] [01] [01];){5}');
+        return (scoreRegex.test(score) && !nameRegex.test(name));
     }
 
     const sendFile = async () => {
